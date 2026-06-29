@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>saimal workspace · 주제 중심 협업 + AI (대화 가능)</title>
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<style>
+  :root{
+    --ink:#16181d;--ink-2:#3c4149;--ink-3:#8b919c;--line:#e9ebef;--line-2:#f1f3f5;
+    --bg:#f5f6f8;--brand:#3B6FF6;--brand-soft:#eaf0ff;--ai:#6C5CE7;--ai-soft:#efeeff;--ok:#1FA971;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{font-family:'Pretendard',-apple-system,sans-serif;color:var(--ink);background:var(--bg);
+    -webkit-font-smoothing:antialiased;padding:18px;display:flex;justify-content:center}
+  .app{width:100%;max-width:1320px;height:calc(100vh - 36px);min-height:600px;background:#fff;border:1px solid var(--line);
+    border-radius:16px;box-shadow:0 12px 40px rgba(20,24,32,.08);display:flex;overflow:hidden}
+
+  .side{width:248px;flex:0 0 auto;background:#fafbfc;border-right:1px solid var(--line);display:flex;flex-direction:column}
+  .ws{display:flex;align-items:center;gap:10px;padding:16px 16px 12px}
+  .ws .logo{width:32px;height:32px;border-radius:9px;background:transparent;overflow:hidden;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+  .ws .nm{font-size:15px;font-weight:700}
+  .ws .nm small{display:block;font-size:11px;color:var(--ink-3);font-weight:500}
+  .search{margin:0 14px 12px;display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line);border-radius:9px;padding:8px 11px;font-size:13px;color:var(--ink-3)}
+  .sect{padding:10px 18px 4px;font-size:11.5px;font-weight:700;color:var(--ink-3);letter-spacing:.02em;display:flex;align-items:center;justify-content:space-between}
+  .nav{list-style:none;padding:0 8px}
+  .nav li{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:9px;font-size:13.5px;color:var(--ink-2);cursor:pointer;margin-bottom:1px}
+  .nav li:hover{background:var(--line-2)}
+  .nav li.on{background:var(--brand-soft);color:var(--brand);font-weight:600}
+  .nav li .hash{color:var(--ink-3);font-weight:600}
+  .nav li.on .hash{color:var(--brand)}
+  .nav li .badge{margin-left:auto;font-size:11px;font-weight:700;background:#ff5a5f;color:#fff;border-radius:999px;padding:1px 7px}
+  .nav li .dm{width:20px;height:20px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:11px;color:#34362c;font-weight:700}
+  .side-foot{margin-top:auto;padding:12px 16px;border-top:1px solid var(--line);display:flex;align-items:center;gap:9px;font-size:13px;color:var(--ink-2)}
+  .side-foot .me{width:30px;height:30px;border-radius:9px;background:#B45CC4;display:flex;align-items:center;justify-content:center;border:2px solid #fff;box-shadow:0 1px 5px rgba(0,0,0,.12)}
+
+  .main{flex:1;min-width:0;display:flex;flex-direction:column;background:#fff}
+  .topbar{display:flex;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid var(--line)}
+  .topbar .ttl{font-size:16px;font-weight:700;display:flex;align-items:center;gap:6px}
+  .topbar .ttl .hash{color:var(--ink-3)}
+  .topbar .desc{font-size:12.5px;color:var(--ink-3);margin-left:2px}
+  .topbar .right{margin-left:auto;display:flex;align-items:center;gap:8px}
+  .members{display:flex;align-items:center}
+  .members span{width:26px;height:26px;border-radius:50%;border:2px solid #fff;margin-left:-7px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#34362c}
+  .ai-btn{display:flex;align-items:center;gap:6px;border:1px solid var(--ai);background:var(--ai-soft);color:var(--ai);border-radius:9px;padding:7px 12px;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;transition:.15s}
+  .ai-btn:hover{background:#e7e5ff}
+  .ai-btn.off{border-color:var(--line);background:#fff;color:var(--ink-3)}
+
+  .tabs{display:flex;gap:2px;padding:8px 14px 0;border-bottom:1px solid var(--line)}
+  .tabs button{border:none;background:none;font-family:inherit;font-size:13.5px;font-weight:600;color:var(--ink-3);padding:9px 14px;cursor:pointer;position:relative;border-radius:8px 8px 0 0}
+  .tabs button:hover{color:var(--ink-2)}
+  .tabs button.on{color:var(--ink)}
+  .tabs button.on::after{content:'';position:absolute;left:10px;right:10px;bottom:-1px;height:2.5px;background:var(--brand);border-radius:2px}
+  .tabs button .cnt{font-size:11px;color:var(--ink-3);margin-left:4px}
+
+  .scroll{flex:1;overflow-y:auto;padding:16px 20px}
+  .day{text-align:center;font-size:11.5px;color:var(--ink-3);margin:6px 0 14px;position:relative}
+  .day::before,.day::after{content:'';position:absolute;top:50%;width:34%;height:1px;background:var(--line)}
+  .day::before{left:0}.day::after{right:0}
+  .chat{display:flex;gap:11px;position:relative;padding:9px 12px;margin:0 -12px 19px;border-radius:10px;transition:background .12s}
+  .chat:hover{background:#f3f5f8}
+  .chat .av{width:36px;height:36px;border-radius:10px;flex:0 0 auto;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#34362c}
+  .chat .body{flex:1;min-width:0}
+  .chat .nm{font-size:13.5px;font-weight:700}
+  .chat .nm .role{font-size:11.5px;font-weight:500;color:var(--ink-3);margin-left:6px}
+  .chat .nm .roletag{font-size:11px;font-weight:700;border-radius:999px;padding:2px 8px;margin-left:7px}
+  .chat .nm .t{font-size:11px;color:var(--ink-3);margin-left:7px;font-weight:400}
+  .chat .tx{font-size:14px;line-height:1.62;color:var(--ink-2);margin-top:3px;word-break:break-word}
+  .file{display:inline-flex;align-items:center;gap:10px;margin-top:8px;border:1px solid var(--line);border-radius:11px;padding:9px 13px;background:#fff;min-width:230px}
+  .file .ic{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;color:#fff;flex:0 0 auto}
+  .file .fn{font-size:13px;font-weight:600}
+  .file .fm{font-size:11.5px;color:var(--ink-3)}
+  .comments{margin-top:7px;font-size:12.5px;color:var(--brand);font-weight:600;cursor:pointer}
+
+  .files-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+  .fcard{border:1px solid var(--line);border-radius:13px;padding:14px;background:#fff;cursor:pointer;transition:.15s}
+  .fcard:hover{box-shadow:0 6px 18px rgba(0,0,0,.06)}
+  .fcard .ic{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;color:#fff;margin-bottom:10px}
+  .fcard .fn{font-size:13.5px;font-weight:700}
+  .fcard .fm{font-size:11.5px;color:var(--ink-3);margin-top:3px}
+
+  .task-col{margin-bottom:18px}
+  .task-h{font-size:12.5px;font-weight:700;color:var(--ink-3);margin-bottom:9px;display:flex;align-items:center;gap:7px}
+  .task-h .pill{font-size:11px;background:var(--line-2);border-radius:999px;padding:1px 8px;color:var(--ink-3)}
+  .task{display:flex;align-items:center;gap:11px;border:1px solid var(--line);border-radius:11px;padding:11px 13px;margin-bottom:8px;background:#fff}
+  .task .cb{width:22px;height:22px;border-radius:7px;border:none;flex:0 0 auto;cursor:pointer;display:flex;align-items:center;justify-content:center;background:#cbd0d7;transition:.15s}
+  .task .cb::after{content:'✓';font-size:12px;font-weight:800;color:rgba(255,255,255,.85)}
+  .task .cb:hover{filter:brightness(.96)}
+  .task.done .cb{background:#2F73F6}
+  .task.done .cb::after{color:#fff}
+  .task.done .tt{color:var(--ink-3);text-decoration:line-through}
+  .task .tt{font-size:14px;font-weight:600;flex:1}
+  .task .who{font-size:12px;color:var(--ink-3);display:flex;align-items:center;gap:7px}
+  .task .who .a{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10.5px;font-weight:700;color:#34362c}
+  .task .due{font-size:11.5px;color:var(--ink-3);background:var(--line-2);border-radius:999px;padding:2px 9px}
+
+  .composer{border-top:1px solid var(--line);padding:11px 16px}
+  .composer .box{border:1px solid var(--line);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:8px}
+  .composer .box:focus-within{border-color:var(--brand)}
+  .composer input{border:none;outline:none;font-family:inherit;font-size:14px;color:var(--ink);background:none}
+  .composer .tools{display:flex;align-items:center;gap:14px;color:var(--ink-3);font-size:15px}
+  .composer .tools .send{margin-left:auto;background:var(--brand);color:#fff;border:none;border-radius:8px;padding:6px 14px;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer}
+
+  .ai{width:372px;flex:0 0 auto;border-left:1px solid var(--line);display:flex;flex-direction:column;background:#fff}
+  .ai.hidden{display:none}
+  .ai-head{padding:16px 18px 14px;background:linear-gradient(135deg,#f3f1ff,#eaf2ff);border-bottom:1px solid var(--line)}
+  .ai-head .row{display:flex;align-items:center;justify-content:space-between}
+  .ai-head .brand{display:flex;align-items:center;gap:8px;font-size:14.5px;font-weight:800;color:var(--ai)}
+  .ai-head .x{border:none;background:none;color:var(--ink-3);font-size:18px;cursor:pointer}
+  .ai-head .greet{font-size:20px;font-weight:700;letter-spacing:-.01em;margin-top:12px;line-height:1.3}
+  .ai-head .scope{font-size:12px;color:var(--ink-3);margin-top:6px}
+  .ai-head .scope b{color:var(--ai)}
+  .ai-body{flex:1;overflow-y:auto;padding:14px}
+  .chips{display:flex;flex-direction:column;gap:8px}
+  .chip-label{font-size:11.5px;font-weight:700;color:var(--ink-3);margin-bottom:2px}
+  .chip{display:flex;align-items:center;gap:11px;border:1px solid var(--line);border-radius:12px;padding:12px 13px;background:#fff;cursor:pointer;transition:.14s;text-align:left;font-family:inherit;width:100%}
+  .chip:hover{border-color:var(--ai);background:var(--ai-soft)}
+  .chip .ic{font-size:15px}
+  .chip .tx{font-size:13.5px;font-weight:600;color:var(--ink-2);line-height:1.4}
+
+  .aimsg{display:flex;gap:8px;margin-bottom:12px;animation:fade .22s}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1}}
+  .aimsg.user{flex-direction:row-reverse}
+  .aimsg .ic2{width:26px;height:26px;border-radius:8px;flex:0 0 auto;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;overflow:hidden}
+  .aimsg.ai .ic2{background:transparent}
+  .aimsg.user .ic2{background:#B45CC4;color:#5a2a36}
+  .aimsg .bub{padding:10px 12px;border-radius:12px;font-size:13.5px;line-height:1.65;max-width:85%;white-space:pre-line;word-break:break-word}
+  .aimsg.ai .bub{background:#F3F3F5;color:var(--ink-2);border-top-left-radius:4px}
+  .aimsg.user .bub{background:#7B80E5;color:#fff;border-top-right-radius:4px}
+  .aimsg .bub .h{font-weight:700;color:var(--ai);display:block;margin-bottom:4px;font-size:12.5px}
+  .aimsg .bub b{color:var(--ink)}
+  .aimsg .bub .act{margin-top:9px}
+  .aimsg .bub .act button{border:1px solid var(--ai);background:#fff;color:var(--ai);border-radius:8px;padding:6px 11px;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer}
+  .typing{font-size:12.5px;color:var(--ink-3);padding:2px 4px}
+  .typing-row .dots{display:inline-flex;gap:4px;align-items:center;padding:5px 2px}
+  .typing-row .dots i{width:6px;height:6px;border-radius:50%;background:var(--ink-3);opacity:.5;animation:bd 1s infinite}
+  .typing-row .dots i:nth-child(2){animation-delay:.15s}
+  .typing-row .dots i:nth-child(3){animation-delay:.3s}
+  @keyframes bd{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-4px);opacity:.95}}
+
+  .ai-foot{border-top:1px solid var(--line);padding:11px 14px}
+  .ai-input{border:1px solid var(--line);border-radius:11px;padding:8px 10px;display:flex;align-items:center;gap:8px}
+  .ai-input:focus-within{border-color:var(--brand)}
+  .ai-input span{color:var(--brand);font-size:14px}
+  .ai-input input{flex:1;border:none;outline:none;font-family:inherit;font-size:13.5px;background:none;color:var(--ink)}
+  .ai-send{border:none;background:var(--brand);color:#fff;width:28px;height:28px;border-radius:8px;cursor:pointer;font-size:14px;flex:0 0 auto}
+  .ai-scope{margin-top:8px;font-size:11.5px;color:var(--ink-3);display:flex;align-items:center;gap:6px}
+  .ai-scope .tag{background:var(--ai-soft);color:var(--ai);border-radius:999px;padding:2px 9px;font-weight:700}
+  .ai-disc{font-size:11px;color:var(--ink-3);text-align:center;margin-top:9px}
+
+  @media(max-width:1080px){.ai{width:330px}}
+  @media(max-width:920px){.side{display:none}}
+  .pic{width:78%;height:78%;fill:#fff;opacity:.95}
+  .ai-backbar{position:sticky;top:0;background:#fff;display:flex;gap:8px;align-items:center;padding:6px 0 9px;margin-bottom:8px;border-bottom:1px solid var(--line);z-index:3}
+  .ai-back,.ai-reset{border:1px solid var(--line);background:#fff;border-radius:999px;padding:5px 12px;font-family:inherit;font-size:12px;font-weight:600;color:var(--ink-2);cursor:pointer;transition:.14s}
+  .ai-back:hover,.ai-reset:hover{background:var(--ai-soft);border-color:var(--ai);color:var(--ai)}
+  .ai-reset{color:var(--ink-3)}
+  .mlist{display:flex;flex-direction:column;gap:12px;max-width:540px}
+  .mcard{display:flex;align-items:center;gap:14px;border:1px solid var(--line);border-radius:18px;padding:14px 16px;background:#fff;box-shadow:0 4px 14px rgba(0,0,0,.04);transition:.15s}
+  .mcard:hover{box-shadow:0 8px 22px rgba(0,0,0,.07)}
+  .mava{width:58px;height:58px;border-radius:19px;flex:0 0 auto;display:flex;align-items:center;justify-content:center;border:2px solid #fff;box-shadow:0 2px 10px rgba(0,0,0,.12)}
+  .minfo{flex:1;min-width:0}
+  .mname{font-size:16px;font-weight:700;display:flex;align-items:center;gap:8px}
+  .meTag{font-size:11px;font-weight:600;color:var(--ink-3)}
+  .mbadge{font-size:12px;font-weight:700;border-radius:999px;padding:3px 11px}
+  .msub{font-size:12.5px;color:var(--ink-3);margin-top:6px;display:flex;align-items:center;gap:7px}
+  .mdot{width:7px;height:7px;border-radius:50%;display:inline-block}
+  .mdot.on{background:#1FA971}.mdot.off{background:#c7ccd3}
+  .msg-tools{position:absolute;top:-12px;right:18px;display:none;align-items:center;gap:1px;background:#fff;border:1px solid var(--line);border-radius:11px;box-shadow:0 6px 20px rgba(0,0,0,.13);padding:3px 4px;z-index:5}
+  .chat:hover .msg-tools{display:flex}
+  .msg-tools button{border:none;background:none;cursor:pointer;font-size:15px;width:29px;height:29px;border-radius:8px;display:flex;align-items:center;justify-content:center;transition:.12s;line-height:1}
+  .msg-tools button:hover{background:var(--line-2);transform:scale(1.12)}
+  .msg-tools .sep{width:1px;height:18px;background:var(--line);margin:0 3px}
+  .reacts{display:flex;gap:5px;margin-top:8px;flex-wrap:wrap}
+  .react{font-size:12px;background:var(--brand-soft);border:1px solid #d4e1ff;color:#2a4ba8;border-radius:999px;padding:2px 9px;cursor:pointer;font-weight:600;transition:.12s}
+  .react:hover{background:#dde7ff}
+  .wtoast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(10px);background:var(--ink);color:#fff;padding:9px 16px;border-radius:999px;font-size:13px;font-weight:600;opacity:0;pointer-events:none;transition:.2s;z-index:300}
+  .wtoast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  .react.mine{background:#d3e1ff;border-color:#9fbcff;color:#1d3c8a}
+  .r-plan{background:#D7F0EB;color:#1C8A7F}
+  .r-design{background:#F5E1F4;color:#A23BB0}
+  .r-dev{background:#E5E6FB;color:#4348B8}
+  .r-mkt{background:#DBEDFB;color:#1C7DC0}
+  .file .ic .ficon,.fcard .ic .ficon{width:70%;height:70%;display:block}
+  .thread{margin:9px 0 2px 47px;border-left:2px solid var(--line);padding-left:14px;display:flex;flex-direction:column;gap:13px}
+  .cmt{display:flex;gap:9px}
+  .cav{width:28px;height:28px;border-radius:8px;flex:0 0 auto;display:flex;align-items:center;justify-content:center}
+  .cnm{font-size:12.5px;font-weight:700;color:var(--ink);display:flex;align-items:center;gap:3px}
+  .cnm .roletag{font-size:10px;font-weight:700;border-radius:999px;padding:1px 7px;margin-left:2px}
+  .cnm .ct{font-size:10.5px;color:var(--ink-3);font-weight:400;margin-left:4px}
+  .ctx{font-size:13px;line-height:1.55;color:var(--ink-2);margin-top:3px}
+  .brand .logomark{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:7px;background:transparent;overflow:hidden;flex:0 0 auto}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="lgBg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6FA8F2"/><stop offset="0.55" stop-color="#7E97EE"/><stop offset="1" stop-color="#9483E6"/></linearGradient><radialGradient id="lgGlow" cx="0.5" cy="0.44" r="0.55"><stop offset="0" stop-color="#FFFFFF" stop-opacity="0.95"/><stop offset="0.5" stop-color="#DCE8FF" stop-opacity="0.35"/><stop offset="1" stop-color="#DCE8FF" stop-opacity="0"/></radialGradient><filter id="lgSoft" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="1.4"/></filter></defs></svg>
+<div class="app">
+  <aside class="side">
+    <div class="ws"><div class="logo"><svg viewBox="0 0 48 48" width="32" height="32"><defs><linearGradient id="bgA" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6FA8F2"/><stop offset="0.55" stop-color="#7E97EE"/><stop offset="1" stop-color="#9483E6"/></linearGradient><radialGradient id="glowA" cx="0.5" cy="0.44" r="0.55"><stop offset="0" stop-color="#FFFFFF" stop-opacity="0.95"/><stop offset="0.5" stop-color="#DCE8FF" stop-opacity="0.35"/><stop offset="1" stop-color="#DCE8FF" stop-opacity="0"/></radialGradient><filter id="softA" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="1.4"/></filter></defs><rect x="0" y="0" width="48" height="48" rx="14" fill="url(#bgA)"/><circle cx="24" cy="22" r="16" fill="url(#glowA)"/><path d="M24 13 C26.5 21.5 26.5 21.5 35 24 C26.5 26.5 26.5 26.5 24 35 C21.5 26.5 21.5 26.5 13 24 C21.5 21.5 21.5 21.5 24 13 Z" fill="#fff" opacity="0.85" filter="url(#softA)"/><path d="M24 13 C26.5 21.5 26.5 21.5 35 24 C26.5 26.5 26.5 26.5 24 35 C21.5 26.5 21.5 26.5 13 24 C21.5 21.5 21.5 21.5 24 13 Z" fill="#fff"/></svg></div><div class="nm">saimal<small>고객경험팀 워크스페이스</small></div></div>
+    <div class="search">🔍 대화·자료 검색 <span style="margin-left:auto;font-size:11px;border:1px solid var(--line);border-radius:5px;padding:1px 5px">⌘K</span></div>
+    <div class="sect">업무 주제 (토픽) <span>＋</span></div>
+    <ul class="nav">
+      <li class="on"><span class="hash">#</span> 고객 초청 행사 <span class="badge">3</span></li>
+      <li><span class="hash">#</span> 신규 온보딩 개편</li>
+      <li><span class="hash">#</span> 4분기 마케팅 캠페인</li>
+      <li><span class="hash">#</span> 디자인 시스템 v2</li>
+    </ul>
+    <div class="sect" style="margin-top:8px">다이렉트 메시지 <span>＋</span></div>
+    <ul class="nav">
+      <li><span class="dm" style="background:#2FA39A"><svg viewBox="0 0 24 24" class="pic"><circle cx="12" cy="9" r="3.7"/><path d="M5.5 19.2c0-3.5 2.9-5.8 6.5-5.8s6.5 2.3 6.5 5.8v.6h-13z"/></svg></span> 박종민</li>
+      <li><span class="dm" style="background:#2398D4"><svg viewBox="0 0 24 24" class="pic"><circle cx="12" cy="9" r="3.7"/><path d="M5.5 19.2c0-3.5 2.9-5.8 6.5-5.8s6.5 2.3 6.5 5.8v.6h-13z"/></svg></span> 최주민</li>
+      <li><span class="dm" style="background:#4E5AC6"><svg viewBox="0 0 24 24" class="pic"><circle cx="12" cy="9" r="3.7"/><path d="M5.5 19.2c0-3.5 2.9-5.8 6.5-5.8s6.5 2.3 6.5 5.8v.6h-13z"/></svg></span> 조우현</li>
+    </ul>
+    <div class="side-foot"><span class="me"><svg viewBox="0 0 24 24" class="pic"><circle cx="12" cy="9" r="3.7"/><path d="M5.5 19.2c0-3.5 2.9-5.8 6.5-5.8s6.5 2.3 6.5 5.8v.6h-13z"/></svg></span> 김하혜 <span style="margin-left:auto;color:var(--ok);font-size:11px">● 온라인</span></div>
+  </aside>
+
+  <section class="main">
+    <div class="topbar">
+      <div class="ttl"><span class="hash">#</span> 고객 초청 행사</div>
+      <div class="desc">신규 리드 200명 확보 · 11/15 진행</div>
+      <div class="right">
+        <div class="members">
+          <span style="background:#2FA39A"><svg viewBox="0 0 24 24" class="pic"><circle cx="12" cy="9" r="3.7"/><path d="M5.5 19.2c0-3.5 2.9-5.8 6.5-5.8s6.5 2.3 6.5 5.8v.6h-13z"/></svg></span><span style="background:#2398D4"><svg viewBox="0 0 24 24" class="pic"><circle cx="12" cy="9" r="3.7"/><path d="M5.5 19.2c0-3.5 2.9-5.8 6.5-5.8s6.5 2.3 6.5 5.8v.6h-13z"/></svg></span><span style="background:#4E5AC6"><svg viewBox="0 0 24 24" class="pic"><circle cx="12" cy="9" r="3.7"/><path d="M5.5 19.2c0-3.5 2.9-5.8 6.5-5.8s6.5 2.3 6.5 5.8v.6h-13z"/></svg></span><span style="background:#B45CC4"><svg viewBox="0 0 24 24" class="pic"><circle cx="12" cy="9" r="3.7"/><path d="M5.5 19.2c0-3.5 2.9-5.8 6.5-5.8s6.5 2.3 6.5 5.8v.6h-13z"/></svg></span><span style="background:#8b919c">+3</span>
+        </div>
+        <button class="ai-btn" id="aiToggle"><svg viewBox="0 0 24 24" width="14" height="14"><path d="M12 2.5 C13.4 10.6 13.4 10.6 21.5 12 C13.4 13.4 13.4 13.4 12 21.5 C10.6 13.4 10.6 13.4 2.5 12 C10.6 10.6 10.6 10.6 12 2.5 Z" fill="currentColor"/></svg>AI 패널</button>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <button class="on" data-tab="chat">대화</button>
+      <button data-tab="files">자료 <span class="cnt">4</span></button>
+      <button data-tab="tasks">할 일 <span class="cnt">3</span></button>
+      <button data-tab="members">멤버 <span class="cnt">4</span></button>
+    </div>
+
+    <div class="scroll" id="content"></div>
+
+    <div class="composer">
+      <div class="box">
+        <input id="chatInput" placeholder="#고객 초청 행사에 메시지 보내기…  (Enter로 전송)">
+        <div class="tools"><span>＋</span><span>😊</span><span>＠</span><span>📎</span><span>Aa</span>
+          <button class="send" id="chatSend">보내기</button></div>
+      </div>
+    </div>
+  </section>
+
+  <aside class="ai" id="aiPanel">
+    <div class="ai-head">
+      <div class="row">
+        <div class="brand"><span class="logomark"><svg viewBox="0 0 48 48" width="22" height="22"><defs><linearGradient id="bgB" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6FA8F2"/><stop offset="0.55" stop-color="#7E97EE"/><stop offset="1" stop-color="#9483E6"/></linearGradient><radialGradient id="glowB" cx="0.5" cy="0.44" r="0.55"><stop offset="0" stop-color="#FFFFFF" stop-opacity="0.95"/><stop offset="0.5" stop-color="#DCE8FF" stop-opacity="0.35"/><stop offset="1" stop-color="#DCE8FF" stop-opacity="0"/></radialGradient><filter id="softB" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="1.4"/></filter></defs><rect x="0" y="0" width="48" height="48" rx="14" fill="url(#bgB)"/><circle cx="24" cy="22" r="16" fill="url(#glowB)"/><path d="M24 13 C26.5 21.5 26.5 21.5 35 24 C26.5 26.5 26.5 26.5 24 35 C21.5 26.5 21.5 26.5 13 24 C21.5 21.5 21.5 21.5 24 13 Z" fill="#fff" opacity="0.85" filter="url(#softB)"/><path d="M24 13 C26.5 21.5 26.5 21.5 35 24 C26.5 26.5 26.5 26.5 24 35 C21.5 26.5 21.5 26.5 13 24 C21.5 21.5 21.5 21.5 24 13 Z" fill="#fff"/></svg></span> saimal AI</div>
+        <button class="x" id="aiClose">×</button>
+      </div>
+      <div class="greet">하혜님,<br>무엇을 도와드릴까요?</div>
+      <div class="scope">📌 <b>#고객 초청 행사</b>의 대화·자료를 바탕으로 도와드려요</div>
+    </div>
+    <div class="ai-body" id="aiBody"></div>
+    <div class="ai-foot">
+      <form class="ai-input" id="aiForm">
+        <span><svg viewBox="0 0 24 24" width="15" height="15" style="display:block"><path d="M12 2.5 C13.4 10.6 13.4 10.6 21.5 12 C13.4 13.4 13.4 13.4 12 21.5 C10.6 13.4 10.6 13.4 2.5 12 C10.6 10.6 10.6 10.6 12 2.5 Z" fill="var(--brand)"/></svg></span>
+        <input id="aiInput" placeholder="AI에게 무엇이든 물어보세요…" autocomplete="off">
+        <button class="ai-send" type="submit">↑</button>
+      </form>
+      <div class="ai-scope">기준 <span class="tag"># 고객 초청 행사 ▾</span> · 최근 2주</div>
+      <div class="ai-disc">saimal AI는 실수할 수 있어요. 중요한 내용은 확인하세요.</div>
+    </div>
+  </aside>
+</div>
+
+<script>
+  const $ = id => document.getElementById(id);
+  const PERSON = `<svg viewBox="0 0 24 24" class="pic"><circle cx="12" cy="9" r="3.7"/><path d="M5.5 19.2c0-3.5 2.9-5.8 6.5-5.8s6.5 2.3 6.5 5.8v.6h-13z"/></svg>`;
+  const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  function nowKr(){ const d=new Date(); let h=d.getHours(); const m=String(d.getMinutes()).padStart(2,'0'); const ap=h<12?'오전':'오후'; h=h%12||12; return `${ap} ${h}:${m}`; }
+
+  /* ── 팀 대화(데이터로 관리 → 탭 전환해도 유지) ── */
+  let chatMsgs = [
+    {nm:'박종민',role:'기획',color:'#2FA39A',t:'오후 1:20',tx:'올해 고객 초청 행사 스프린트 시작합니다. 목표는 <b>신규 리드 200명 확보</b>예요. 등록 페이지부터 붙이죠.'},
+    {nm:'김하혜',role:'디자인',color:'#B45CC4',t:'오후 2:05',tx:'행사 키비주얼 시안 3개 올려둘게요. 톤은 지난번보다 밝게 잡았어요.',file:{ic:'🎨',bg:'#a259ff',fn:'키비주얼_v3.fig',fm:'김하혜 · 4.2MB'}},
+    {nm:'조우현',role:'개발',color:'#4E5AC6',t:'오후 2:38',tx:'등록 페이지는 다음 주까지 붙일 수 있어요. 다만 <b>폼 필드 확정</b>이 먼저 필요합니다.',commentsList:[
+      {nm:'박종민',role:'기획',color:'#2FA39A',t:'오후 2:41',tx:'폼 필드는 최소로 가죠. 이름·이메일·회사명·직책 정도면 될까요?'},
+      {nm:'최주민',role:'마케팅',color:'#2398D4',t:'오후 2:43',tx:'회사명·직책은 꼭 필요해요. 나중에 세그먼트 나눌 때 써요.'},
+      {nm:'김하혜',role:'디자인',color:'#B45CC4',t:'오후 2:45',tx:'4개면 한 화면에 깔끔하게 들어가요. 좋아요 👍'},
+      {nm:'조우현',role:'개발',color:'#4E5AC6',t:'오후 2:47',tx:'그럼 4개로 확정하고 제가 등록 페이지에 붙일게요.'},
+      {nm:'박종민',role:'기획',color:'#2FA39A',t:'오후 2:48',tx:'확정! 일정만 공유 부탁해요 🙌'}
+    ]},
+    {nm:'최주민',role:'마케팅',color:'#2398D4',t:'오후 4:36',tx:'메일 발송 대상자 리스트 정리 완료했어요. 발송 일정만 정하면 됩니다.',file:{ic:'📊',bg:'#1FA971',fn:'참가자_리스트.xlsx',fm:'최주민 · 218KB'},reactions:{'👍':6,'❤️':2,'🙌':1}}
+  ];
+  const roleClass = r => ({'기획':'r-plan','디자인':'r-design','개발':'r-dev','마케팅':'r-mkt'}[r]||'');
+  const LOGO = s => `<svg viewBox="0 0 48 48" width="${s}" height="${s}"><rect x="0" y="0" width="48" height="48" rx="14" fill="url(#lgBg)"/><circle cx="24" cy="22" r="16" fill="url(#lgGlow)"/><path d="M24 13 C26.5 21.5 26.5 21.5 35 24 C26.5 26.5 26.5 26.5 24 35 C21.5 26.5 21.5 26.5 13 24 C21.5 21.5 21.5 21.5 24 13 Z" fill="#fff" opacity="0.85" filter="url(#lgSoft)"/><path d="M24 13 C26.5 21.5 26.5 21.5 35 24 C26.5 26.5 26.5 26.5 24 35 C21.5 26.5 21.5 26.5 13 24 C21.5 21.5 21.5 21.5 24 13 Z" fill="#fff"/></svg>`;
+  function renderChat(){
+    let h = `<div class="day">2024년 10월 24일</div>`;
+    chatMsgs.forEach((m,idx)=>{
+      const reacts = m.reactions && Object.keys(m.reactions).length
+        ? `<div class="reacts">${Object.entries(m.reactions).map(([e,c])=>`<span class="react ${m.myReacts&&m.myReacts.has(e)?'mine':''}" data-react="${e}">${e} ${c}</span>`).join('')}</div>` : '';
+      const tools = m.nm!=='김하혜'
+        ? `<div class="msg-tools">
+            <button data-react="👍" title="좋아요">👍</button>
+            <button data-react="❤️" title="최고예요">❤️</button>
+            <button data-react="🙌" title="고마워요">🙌</button>
+            <button data-react="😄" title="웃겨요">😄</button>
+            <span class="sep"></span>
+            <button data-comment title="댓글">💬</button>
+            <button data-more title="더보기">⋯</button>
+          </div>` : '';
+      h += `<div class="chat" data-i="${idx}"><div class="av" style="background:${m.color}">${PERSON}</div><div class="body">
+        <div class="nm">${m.nm} <span class="roletag ${roleClass(m.role)}">${m.role}</span><span class="t">${m.t}</span></div>
+        <div class="tx">${m.tx}</div>
+        ${m.file?`<div class="file"><div class="ic" style="background:#EEF0F3;color:${m.file.bg}">${fileIcon(m.file.fn)}</div><div><div class="fn">${m.file.fn}</div><div class="fm">${m.file.fm}</div></div></div>`:''}
+        ${m.commentsList?`<div class="comments" data-comments="${idx}">💬 댓글 ${m.commentsList.length}개 ${m.commentsOpen?'접기 ▴':'모두 보기 →'}</div>${m.commentsOpen?`<div class="thread">${m.commentsList.map(c=>`<div class="cmt"><div class="cav" style="background:${c.color}">${PERSON}</div><div class="cbody"><div class="cnm">${c.nm} <span class="roletag ${roleClass(c.role)}">${c.role}</span><span class="ct">${c.t}</span></div><div class="ctx">${c.tx}</div></div></div>`).join('')}</div>`:''}`:''}
+        ${reacts}
+      </div>${tools}</div>`;
+    });
+    return h;
+  }
+  function bindChat(){
+    $('content').querySelectorAll('.chat[data-i]').forEach(row=>{
+      const i = +row.dataset.i;
+      row.querySelectorAll('[data-react]').forEach(b=> b.onclick=(e)=>{ e.stopPropagation(); addReaction(i, b.dataset.react); });
+      const cm = row.querySelector('[data-comment]'); if(cm) cm.onclick=()=>{ const inp=$('chatInput'); if(inp) inp.focus(); toast('댓글을 입력해 보세요'); };
+      const mo = row.querySelector('[data-more]'); if(mo) mo.onclick=()=>toast('더보기 · 답장 / 고정 / 공유 (시안)');
+      const cl = row.querySelector('[data-comments]'); if(cl) cl.onclick=()=>{ const m=chatMsgs[i]; m.commentsOpen=!m.commentsOpen; renderChatTab(); };
+    });
+  }
+  function addReaction(i, emoji){
+    const m = chatMsgs[i]; if(!m) return;
+    m.reactions = m.reactions || {};
+    m.myReacts = m.myReacts || new Set();
+    if(m.myReacts.has(emoji)){            // 이미 누름 → 취소
+      m.reactions[emoji] = (m.reactions[emoji]||1) - 1;
+      if(m.reactions[emoji] <= 0) delete m.reactions[emoji];
+      m.myReacts.delete(emoji);
+    } else {                              // 처음 누름 → +1
+      m.reactions[emoji] = (m.reactions[emoji]||0) + 1;
+      m.myReacts.add(emoji);
+    }
+    renderChatTab();
+  }
+  let _toastTmr;
+  function toast(msg){
+    let t=$('wtoast');
+    if(!t){ t=document.createElement('div'); t.id='wtoast'; t.className='wtoast'; document.body.appendChild(t); }
+    t.textContent=msg; t.classList.add('show'); clearTimeout(_toastTmr); _toastTmr=setTimeout(()=>t.classList.remove('show'),1400);
+  }
+
+  const ICON = {
+    design:`<svg viewBox="0 0 24 24" class="ficon"><rect x="3.5" y="4" width="17" height="16" rx="3" fill="currentColor"/><circle cx="9" cy="9.5" r="2" fill="#fff" opacity=".92"/><path d="M4.5 18.5l5-5.5 3.2 3.5L16 12l4 6.5z" fill="#fff" opacity=".72"/></svg>`,
+    sheet:`<svg viewBox="0 0 24 24" class="ficon"><rect x="3.5" y="4" width="17" height="16" rx="3" fill="currentColor"/><path d="M3.5 9.3h17M3.5 14.6h17M9.3 4v16M14.6 4v16" stroke="#fff" stroke-opacity=".75" stroke-width="1.2"/></svg>`,
+    doc:`<svg viewBox="0 0 24 24" class="ficon"><path d="M7 3.5h6.5L18 8v11.5A1.5 1.5 0 0 1 16.5 21h-9A1.5 1.5 0 0 1 6 19.5V5A1.5 1.5 0 0 1 7 3.5z" fill="currentColor"/><path d="M13 3.6V8.4h4.7" fill="#fff" opacity=".5"/><rect x="8.6" y="12" width="7" height="1.7" rx=".85" fill="#fff" opacity=".82"/><rect x="8.6" y="15.3" width="5" height="1.7" rx=".85" fill="#fff" opacity=".82"/></svg>`,
+    chart:`<svg viewBox="0 0 24 24" class="ficon"><rect x="3.5" y="4" width="17" height="16" rx="3" fill="currentColor"/><rect x="7" y="12.5" width="2.6" height="4.5" rx="1" fill="#fff" opacity=".88"/><rect x="10.9" y="9.5" width="2.6" height="7.5" rx="1" fill="#fff" opacity=".88"/><rect x="14.8" y="13.5" width="2.6" height="3.5" rx="1" fill="#fff" opacity=".88"/></svg>`
+  };
+  function fileIcon(fn){
+    if(/\.fig$/i.test(fn) || /\.(png|jpg|jpeg|gif|sketch)$/i.test(fn)) return ICON.design;
+    if(/\.pdf$/i.test(fn)) return ICON.doc;
+    if(/\.xlsx?$|\.csv$/i.test(fn)) return /예산|budget|chart|매출|차트/.test(fn) ? ICON.chart : ICON.sheet;
+    return ICON.doc;
+  }
+  const FILE_LIST = [
+    {fn:'키비주얼_v3.fig', who:'김하혜 · 10/24', bg:'#a259ff'},
+    {fn:'참가자_리스트.xlsx', who:'최주민 · 10/24', bg:'#1FA971'},
+    {fn:'행사_기획서.pdf', who:'박종민 · 10/22', bg:'#ff5a5f'},
+    {fn:'예산안_2024Q4.xlsx', who:'박종민 · 10/21', bg:'#3B6FF6'}
+  ];
+  function renderFiles(){
+    return `<div class="files-grid">` + FILE_LIST.map(f=>`<div class="fcard"><div class="ic" style="background:#EEF0F3;color:${f.bg}">${fileIcon(f.fn)}</div><div class="fn">${f.fn}</div><div class="fm">${f.who}</div></div>`).join('') + `</div>`;
+  }
+  const TASKS = `
+    <div class="task-col"><div class="task-h">진행 예정 <span class="pill">3</span></div>
+      <div class="task"><div class="cb"></div><div class="tt">등록 페이지 폼 필드 확정</div><div class="who"><span class="a" style="background:#4E5AC6"><svg viewBox="0 0 24 24" class="pic"><circle cx="12" cy="9" r="3.7"/><path d="M5.5 19.2c0-3.5 2.9-5.8 6.5-5.8s6.5 2.3 6.5 5.8v.6h-13z"/></svg></span>조우현</div><div class="due">~10/28</div></div>
+      <div class="task"><div class="cb"></div><div class="tt">키비주얼 최종안 선정</div><div class="who"><span class="a" style="background:#B45CC4"><svg viewBox="0 0 24 24" class="pic"><circle cx="12" cy="9" r="3.7"/><path d="M5.5 19.2c0-3.5 2.9-5.8 6.5-5.8s6.5 2.3 6.5 5.8v.6h-13z"/></svg></span>김하혜</div><div class="due">~10/29</div></div>
+      <div class="task"><div class="cb"></div><div class="tt">초청 메일 발송</div><div class="who"><span class="a" style="background:#2398D4"><svg viewBox="0 0 24 24" class="pic"><circle cx="12" cy="9" r="3.7"/><path d="M5.5 19.2c0-3.5 2.9-5.8 6.5-5.8s6.5 2.3 6.5 5.8v.6h-13z"/></svg></span>최주민</div><div class="due">~11/01</div></div>
+    </div>
+    <div class="task-col"><div class="task-h">완료 <span class="pill">1</span></div>
+      <div class="task done"><div class="cb"></div><div class="tt">참가자 리스트 정리</div><div class="who"><span class="a" style="background:#2398D4"><svg viewBox="0 0 24 24" class="pic"><circle cx="12" cy="9" r="3.7"/><path d="M5.5 19.2c0-3.5 2.9-5.8 6.5-5.8s6.5 2.3 6.5 5.8v.6h-13z"/></svg></span>최주민</div><div class="due">완료</div></div>
+    </div>`;
+
+  let activeTab='chat';
+  const TEAM = [
+    {nm:'박종민', role:'기획',   color:'#2FA39A', sub:'고객경험팀 · 팀 리드', on:true},
+    {nm:'김하혜', role:'디자인', color:'#B45CC4', sub:'고객경험팀', on:true, me:true},
+    {nm:'조우현', role:'개발',   color:'#4E5AC6', sub:'고객경험팀', on:false},
+    {nm:'최주민', role:'마케팅', color:'#2398D4', sub:'고객경험팀', on:true}
+  ];
+  function renderMembers(){
+    return `<div class="mlist">` + TEAM.map(p=>`
+      <div class="mcard">
+        <div class="mava" style="background:${p.color}">${PERSON}</div>
+        <div class="minfo">
+          <div class="mname">${p.nm}${p.me?'<span class="meTag">나</span>':''} <span class="mbadge ${roleClass(p.role)}">${p.role}</span></div>
+          <div class="msub"><span class="mdot ${p.on?'on':'off'}"></span>${p.sub} · ${p.on?'온라인':'자리 비움'}</div>
+        </div>
+      </div>`).join('') + `</div>`;
+  }
+  function renderTab(k){
+    activeTab=k;
+    if(k==='chat'){ $('content').innerHTML = renderChat(); bindChat(); }
+    else if(k==='files') $('content').innerHTML = renderFiles();
+    else if(k==='members') $('content').innerHTML = renderMembers();
+    else { $('content').innerHTML = TASKS; $('content').querySelectorAll('.task .cb').forEach(cb=>cb.onclick=()=>cb.closest('.task').classList.toggle('done')); }
+    if(k==='chat') $('content').scrollTop = $('content').scrollHeight;
+  }
+  function switchTab(k){
+    document.querySelectorAll('.tabs button').forEach(x=>x.classList.toggle('on', x.dataset.tab===k));
+    renderTab(k);
+  }
+  document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>switchTab(b.dataset.tab));
+  renderTab('chat');
+
+  /* ── 팀 대화: 회의처럼 주고받기 ── */
+  const sleep = ms => new Promise(r=>setTimeout(r,ms));
+  function renderChatTab(){ if(activeTab==='chat'){ $('content').innerHTML=renderChat(); bindChat(); $('content').scrollTop=$('content').scrollHeight; } }
+  function showTyping(nm,color){
+    if(activeTab!=='chat') return; removeTyping();
+    const el=document.createElement('div'); el.className='chat typing-row'; el.id='typingRow';
+    el.innerHTML=`<div class="av" style="background:${color}">${PERSON}</div><div class="body"><div class="nm">${nm} <span class="role">입력 중</span></div><div class="tx"><span class="dots"><i></i><i></i><i></i></span></div></div>`;
+    $('content').appendChild(el); $('content').scrollTop=$('content').scrollHeight;
+  }
+  function removeTyping(){ const t=$('typingRow'); if(t) t.remove(); }
+
+  const P = {
+    plan:{nm:'박종민',role:'기획',color:'#2FA39A'},
+    mkt:{nm:'최주민',role:'마케팅',color:'#2398D4'},
+    dev:{nm:'조우현',role:'개발',color:'#4E5AC6'}
+  };
+  // 입력 내용과 무관하게 회의를 진행시키는 기본 흐름 (디자인=하혜 본인이므로 답은 기획·마케팅·개발이)
+  const BEATS = [
+    [{...P.plan,tx:'좋아요. 그럼 막힌 것부터 풀죠 — 남은 건 ①등록 폼 필드 ②키비주얼 최종 ③메일 발송일, 셋이에요.'},
+     {...P.dev,tx:'폼 필드만 정해지면 등록 페이지는 다음 주 안에 붙일 수 있어요.'}],
+    [{...P.plan,tx:'하혜님 키비주얼 A안 좋더라고요. 그쪽으로 최종 좁혀주시면 될 것 같아요.'},
+     {...P.mkt,tx:'저도 A안에 한 표요. 초청 메일도 그 톤으로 맞출게요.'}],
+    [{...P.dev,tx:'폼은 이름·이메일·회사명·직책 4개 제안해요. 그 이상은 이탈만 늘어요.'},
+     {...P.plan,tx:'그걸로 확정합니다. 조우현님 등록 페이지 일정만 알려주세요.'}],
+    [{...P.dev,tx:'그럼 다음 주 수요일(10/30)까지 등록 페이지 올려둘게요.'},
+     {...P.plan,tx:'마지막으로 초청 메일 발송일만 남았어요. 최주민님 의견 주세요 🙂'}],
+    [{...P.mkt,tx:'발송은 11/1(금)이 좋아요. 행사 2주 전이라 딱이에요.'},
+     {...P.plan,tx:'좋습니다. 오늘 회의는 여기까지 — 정리는 오른쪽 saimal AI로 회의록 한 번 뽑을게요. ✦'}]
+  ];
+  const FILLER = ['네 좋습니다 👍','확인했어요!','동의해요.','그렇게 진행하죠.','좋은 생각이에요 🙆'];
+  let beatIdx = 0, fillIdx = 0, busy = false;
+
+  function keywordReply(q){
+    if(/폼|필드/.test(q)) return [{...P.dev,tx:'폼은 이름·이메일·회사명·직책 4개로 가시죠. 그 이상은 이탈이 커요.'},{...P.plan,tx:'좋아요, 그걸로 확정하죠. 👍'}];
+    if(/일정|날짜|언제|발송|메일/.test(q)) return [{...P.mkt,tx:'발송일은 11/1(금) 어떠세요? 행사 2주 전이라 딱 좋아요.'},{...P.plan,tx:'좋네요, 그걸로 가시죠.'}];
+    if(/디자인|시안|키비주얼|비주얼|톤|색/.test(q)) return [{...P.plan,tx:'하혜님 디자인 방향 좋아요. A안으로 좁혀주시면 맞춰갈게요.'},{...P.mkt,tx:'메일 톤도 거기에 맞출게요.'}];
+    if(/예산|비용|돈/.test(q)) return [{...P.plan,tx:'예산은 기획서 범위 내에서 소화 가능해요. 초과되면 바로 공유할게요.'}];
+    if(/개발|등록|페이지|구현|연동/.test(q)) return [{...P.dev,tx:'필드 확정되면 등록 페이지 다음 주 수요일까지 붙여둘게요.'}];
+    if(/\?|？|할까|괜찮|어때|어떨|되나|가능/.test(q)) return [{...P.plan,tx:'음, 좋은 포인트예요. 조우현님 의견은요?'},{...P.dev,tx:'확인해서 이따 공유드릴게요.'}];
+    return null;
+  }
+
+  async function runBeat(msgs){
+    busy = true;
+    for(const m of msgs){
+      showTyping(m.nm, m.color);
+      await sleep(680 + Math.min(1500, m.tx.length*22));
+      removeTyping();
+      chatMsgs.push({...m, t:nowKr()});
+      renderChatTab();
+      await sleep(280);
+    }
+    busy = false;
+  }
+  function respond(text){
+    const kw = keywordReply(text);
+    if(kw){ runBeat(kw); return; }
+    if(beatIdx < BEATS.length){ runBeat(BEATS[beatIdx++]); return; }
+    const sp = [P.plan,P.dev,P.mkt][fillIdx%3];
+    runBeat([{...sp, tx:FILLER[fillIdx%FILLER.length]}]); fillIdx++;
+  }
+
+  function sendChat(){
+    const v = $('chatInput').value.trim(); if(!v) return;
+    chatMsgs.push({nm:'김하혜',role:'디자인',color:'#B45CC4',t:nowKr(),tx:esc(v)});
+    $('chatInput').value='';
+    if(activeTab!=='chat') switchTab('chat'); else renderChatTab();
+    if(!busy) setTimeout(()=>respond(v), 350);
+  }
+  $('chatSend').onclick = sendChat;
+  $('chatInput').addEventListener('keydown',e=>{ if(e.key==='Enter'){e.preventDefault();sendChat();} });
+
+  /* ── AI 채팅 ── */
+  const CHIPS = [
+    {k:'summary',ic:'🧾',tx:'이 토픽 대화 요약해줘'},
+    {k:'decide',ic:'✅',tx:'결정된 것·미결인 것 정리해줘'},
+    {k:'todo',ic:'🗂',tx:'할 일 목록 만들어줘 (담당자·기한)'},
+    {k:'meeting',ic:'📅',tx:'다음 회의 일정 잡아줘'},
+    {k:'report',ic:'📊',tx:'진행 상태 보고서 초안 써줘'}
+  ];
+  const RESULTS = {
+    summary:{h:'🧾 대화 요약',b:`<b>#고객 초청 행사 — 지금까지</b>
+• 목표: 신규 리드 200명 확보 (박종민)
+• 디자인: 키비주얼 시안 3개 공유, 최종안 선정 대기 (김하혜)
+• 개발: 등록 페이지 다음 주 가능, 단 폼 필드 확정 필요 (조우현)
+• 마케팅: 참가자 리스트 정리 완료, 발송 일정 미정 (최주민)`},
+    decide:{h:'✅ 결정 · 미결',b:`<b>결정됨</b>
+• 행사 목표: 신규 리드 200명
+• 등록 페이지 자체 제작
+
+<b>미결</b>
+• 등록 폼 필드 확정
+• 키비주얼 최종안 선정
+• 초청 메일 발송일`},
+    todo:{h:'🗂 제안 할 일',b:`☐ 등록 폼 필드 확정 — <b>조우현</b> · 10/28
+☐ 키비주얼 최종안 선정 — <b>김하혜</b> · 10/29
+☐ 초청 메일 발송 — <b>최주민</b> · 11/01`,act:'할 일 탭에 추가'},
+    meeting:{h:'📅 회의 일정 제안',b:`팀 캘린더 빈 시간 기준 후보:
+• 10/25(금) 14:00–14:30
+• 10/28(월) 11:00–11:30
+• 10/29(화) 16:00–16:30`,act:'10/25 14:00로 잡기'},
+    report:{h:'📊 상태 보고서 초안',b:`<b>[고객 초청 행사] 준비 약 75%</b>
+• 완료: 참가자 리스트, 장소 예약
+• 진행: 등록 페이지(개발), 키비주얼(디자인)
+• 리스크: 폼 필드 미확정 시 개발 지연 가능
+• 다음 단계: 폼 필드 확정 → 발송일 확정`,act:'대화에 공유'}
+  };
+  function matchAnswer(q){
+    if(/요약|정리해|무슨 ?얘기|어디까지|summary/i.test(q)) return RESULTS.summary;
+    if(/할 ?일|todo|태스크|담당|업무 ?목록/i.test(q)) return RESULTS.todo;
+    if(/일정|회의|미팅|시간|언제/i.test(q)) return RESULTS.meeting;
+    if(/결정|미결|정해진|남은/i.test(q)) return RESULTS.decide;
+    if(/보고서|리포트|report|상태|진행/i.test(q)) return RESULTS.report;
+    return {h:'saimal AI',b:`#고객 초청 행사의 대화를 기준으로 보면, “${esc(q)}”에 대해선 이렇게 도와드릴 수 있어요. 더 정확히는 아래 동작이 빨라요 — <b>요약 · 결정/미결 · 할 일 · 일정 · 보고서</b> 중에 골라주세요.`};
+  }
+
+  let aiMsgs = []; // {role:'user'|'ai', text|res}
+  function renderAi(){
+    const body = $('aiBody');
+    if(aiMsgs.length===0){
+      body.innerHTML = `<div class="chips"><div class="chip-label">추천 동작</div>` +
+        CHIPS.map(c=>`<button class="chip" data-k="${c.k}"><span class="ic">${c.ic}</span><span class="tx">${c.tx}</span></button>`).join('') + `</div>`;
+      body.querySelectorAll('.chip').forEach(ch=>ch.onclick=()=>{ const c=CHIPS.find(x=>x.k===ch.dataset.k); askAi(c.tx, RESULTS[c.k]); });
+      return;
+    }
+    body.innerHTML = `<div class="ai-backbar"><button class="ai-back" id="aiBack">← 이전으로</button></div>` + aiMsgs.map(m=>{
+      if(m.role==='user') return `<div class="aimsg user"><div class="ic2">${PERSON}</div><div class="bub">${esc(m.text)}</div></div>`;
+      const r=m.res;
+      return `<div class="aimsg ai"><div class="ic2">${LOGO(26)}</div><div class="bub"><span class="h">${r.h}</span>${r.b}${r.act?`<div class="act"><button>${r.act}</button></div>`:''}</div></div>`;
+    }).join('');
+    const bk=$('aiBack'); if(bk) bk.onclick=aiBack;
+    body.scrollTop = body.scrollHeight;
+  }
+  function aiBack(){
+    if(aiMsgs.length && aiMsgs[aiMsgs.length-1].role==='ai') aiMsgs.pop();
+    if(aiMsgs.length && aiMsgs[aiMsgs.length-1].role==='user') aiMsgs.pop();
+    renderAi();
+  }
+  function askAi(question, forced){
+    aiMsgs.push({role:'user',text:question});
+    renderAi();
+    // 타이핑 효과
+    const body=$('aiBody');
+    body.insertAdjacentHTML('beforeend',`<div class="aimsg ai" id="typing"><div class="ic2">${LOGO(26)}</div><div class="bub"><span class="typing">입력 중…</span></div></div>`);
+    body.scrollTop=body.scrollHeight;
+    setTimeout(()=>{
+      const res = forced || matchAnswer(question);
+      aiMsgs.push({role:'ai',res});
+      renderAi();
+    }, 650);
+  }
+  $('aiForm').addEventListener('submit',e=>{ e.preventDefault(); const v=$('aiInput').value.trim(); if(!v) return; $('aiInput').value=''; askAi(v); });
+  renderAi();
+
+  /* ── AI 패널 토글 ── */
+  $('aiToggle').onclick = ()=>{ const p=$('aiPanel'); p.classList.toggle('hidden'); $('aiToggle').classList.toggle('off', p.classList.contains('hidden')); };
+  $('aiClose').onclick = ()=>{ $('aiPanel').classList.add('hidden'); $('aiToggle').classList.add('off'); };
+</script>
+</body>
+</html>
