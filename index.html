@@ -7,12 +7,12 @@
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
 <style>
   :root{
-    --ink:#16181d;--ink-2:#3c4149;--ink-3:#8b919c;--line:#e9ebef;--line-2:#f1f3f5;
-    --bg:#f5f6f8;--brand:#3B6FF6;--brand-soft:#eaf0ff;--ai:#6C5CE7;--ai-soft:#efeeff;--ok:#1FA971;
+    --ink:#1d1d1f;--ink-2:#424245;--ink-3:#86868b;--line:#e4e4e8;--line-2:#f2f2f4;
+    --bg:#f5f5f7;--brand:#0071e3;--brand-soft:#e8f1fd;--ai:#0071e3;--ai-soft:#e8f1fd;--ok:#34c759;
   }
   *{box-sizing:border-box;margin:0;padding:0}
   html,body{height:100%}
-  body{font-family:'Pretendard',-apple-system,sans-serif;color:var(--ink);background:var(--bg);
+  body{font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Pretendard","Helvetica Neue",Arial,sans-serif;letter-spacing:-0.006em;color:var(--ink);background:var(--bg);
     -webkit-font-smoothing:antialiased;padding:18px;display:flex;justify-content:center}
   .app{width:100%;max-width:1320px;height:calc(100vh - 36px);min-height:600px;background:#fff;border:1px solid var(--line);
     border-radius:16px;box-shadow:0 12px 40px rgba(20,24,32,.08);display:flex;overflow:hidden}
@@ -87,7 +87,7 @@
   .task .cb{width:22px;height:22px;border-radius:7px;border:none;flex:0 0 auto;cursor:pointer;display:flex;align-items:center;justify-content:center;background:#cbd0d7;transition:.15s}
   .task .cb::after{content:'✓';font-size:12px;font-weight:800;color:rgba(255,255,255,.85)}
   .task .cb:hover{filter:brightness(.96)}
-  .task.done .cb{background:#2F73F6}
+  .task.done .cb{background:var(--brand)}
   .task.done .cb::after{color:#fff}
   .task.done .tt{color:var(--ink-3);text-decoration:line-through}
   .task .tt{font-size:14px;font-weight:600;flex:1}
@@ -104,9 +104,9 @@
 
   .ai{width:372px;flex:0 0 auto;border-left:1px solid var(--line);display:flex;flex-direction:column;background:#fff}
   .ai.hidden{display:none}
-  .ai-head{padding:16px 18px 14px;background:linear-gradient(135deg,#f3f1ff,#eaf2ff);border-bottom:1px solid var(--line)}
+  .ai-head{padding:16px 18px 14px;background:#f5f5f7;border-bottom:1px solid var(--line)}
   .ai-head .row{display:flex;align-items:center;justify-content:space-between}
-  .ai-head .brand{display:flex;align-items:center;gap:8px;font-size:14.5px;font-weight:800;color:var(--ai)}
+  .ai-head .brand{display:flex;align-items:center;gap:8px;font-size:14.5px;font-weight:800;color:var(--ink)}
   .ai-head .x{border:none;background:none;color:var(--ink-3);font-size:18px;cursor:pointer}
   .ai-head .greet{font-size:20px;font-weight:700;letter-spacing:-.01em;margin-top:12px;line-height:1.3}
   .ai-head .scope{font-size:12px;color:var(--ink-3);margin-top:6px}
@@ -116,7 +116,8 @@
   .chip-label{font-size:11.5px;font-weight:700;color:var(--ink-3);margin-bottom:2px}
   .chip{display:flex;align-items:center;gap:11px;border:1px solid var(--line);border-radius:12px;padding:12px 13px;background:#fff;cursor:pointer;transition:.14s;text-align:left;font-family:inherit;width:100%}
   .chip:hover{border-color:var(--ai);background:var(--ai-soft)}
-  .chip .ic{font-size:15px}
+  .chip .ic{color:var(--brand);display:inline-flex;align-items:center}
+  .chip .ic svg{width:19px;height:19px}
   .chip .tx{font-size:13.5px;font-weight:600;color:var(--ink-2);line-height:1.4}
 
   .aimsg{display:flex;gap:8px;margin-bottom:12px;animation:fade .22s}
@@ -126,8 +127,8 @@
   .aimsg.ai .ic2{background:transparent}
   .aimsg.user .ic2{background:#B45CC4;color:#5a2a36}
   .aimsg .bub{padding:10px 12px;border-radius:12px;font-size:13.5px;line-height:1.65;max-width:85%;white-space:pre-line;word-break:break-word}
-  .aimsg.ai .bub{background:#F3F3F5;color:var(--ink-2);border-top-left-radius:4px}
-  .aimsg.user .bub{background:#7B80E5;color:#fff;border-top-right-radius:4px}
+  .aimsg.ai .bub{background:#e9e9eb;color:var(--ink);border-top-left-radius:4px}
+  .aimsg.user .bub{background:var(--brand);color:#fff;border-top-right-radius:4px}
   .aimsg .bub .h{font-weight:700;color:var(--ai);display:block;margin-bottom:4px;font-size:12.5px}
   .aimsg .bub b{color:var(--ink)}
   .aimsg .bub .act{margin-top:9px}
@@ -178,10 +179,7 @@
   .wtoast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(10px);background:var(--ink);color:#fff;padding:9px 16px;border-radius:999px;font-size:13px;font-weight:600;opacity:0;pointer-events:none;transition:.2s;z-index:300}
   .wtoast.show{opacity:1;transform:translateX(-50%) translateY(0)}
   .react.mine{background:#d3e1ff;border-color:#9fbcff;color:#1d3c8a}
-  .r-plan{background:#D7F0EB;color:#1C8A7F}
-  .r-design{background:#F5E1F4;color:#A23BB0}
-  .r-dev{background:#E5E6FB;color:#4348B8}
-  .r-mkt{background:#DBEDFB;color:#1C7DC0}
+  .r-plan,.r-design,.r-dev,.r-mkt{background:#f0f0f2;color:#6e6e73}
   .file .ic .ficon,.fcard .ic .ficon{width:70%;height:70%;display:block}
   .thread{margin:9px 0 2px 47px;border-left:2px solid var(--line);padding-left:14px;display:flex;flex-direction:column;gap:13px}
   .cmt{display:flex;gap:9px}
@@ -239,7 +237,7 @@
     <div class="composer">
       <div class="box">
         <input id="chatInput" placeholder="#고객 초청 행사에 메시지 보내기…  (Enter로 전송)">
-        <div class="tools"><span>＋</span><span>😊</span><span>＠</span><span>📎</span><span>Aa</span>
+        <div class="tools"><span>＋</span><span><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px"><circle cx="12" cy="12" r="8.4"/><path d="M8.8 14.2a4 4 0 0 0 6.4 0"/><path d="M9 9.6h.01M15 9.6h.01"/></svg></span><span>＠</span><span><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px"><path d="M20 11.5l-8 8a4.5 4.5 0 0 1-6.4-6.4l8.3-8.3a3 3 0 0 1 4.3 4.3l-8.3 8.3a1.5 1.5 0 0 1-2.2-2.1l7.3-7.3"/></svg></span><span>Aa</span>
           <button class="send" id="chatSend">보내기</button></div>
       </div>
     </div>
@@ -252,7 +250,7 @@
         <button class="x" id="aiClose">×</button>
       </div>
       <div class="greet">하혜님,<br>무엇을 도와드릴까요?</div>
-      <div class="scope">📌 <b>#고객 초청 행사</b>의 대화·자료를 바탕으로 도와드려요</div>
+      <div class="scope"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M12 21s6-5.3 6-10.2A6 6 0 0 0 6 10.8C6 15.7 12 21 12 21z"/><circle cx="12" cy="10.6" r="2.2"/></svg> <b>#고객 초청 행사</b>의 대화·자료를 바탕으로 도와드려요</div>
     </div>
     <div class="ai-body" id="aiBody"></div>
     <div class="ai-foot">
@@ -288,6 +286,15 @@
   ];
   const roleClass = r => ({'기획':'r-plan','디자인':'r-design','개발':'r-dev','마케팅':'r-mkt'}[r]||'');
   const LOGO = s => `<svg viewBox="0 0 48 48" width="${s}" height="${s}"><rect x="0" y="0" width="48" height="48" rx="14" fill="url(#lgBg)"/><circle cx="24" cy="22" r="16" fill="url(#lgGlow)"/><path d="M24 13 C26.5 21.5 26.5 21.5 35 24 C26.5 26.5 26.5 26.5 24 35 C21.5 26.5 21.5 26.5 13 24 C21.5 21.5 21.5 21.5 24 13 Z" fill="#fff" opacity="0.85" filter="url(#lgSoft)"/><path d="M24 13 C26.5 21.5 26.5 21.5 35 24 C26.5 26.5 26.5 26.5 24 35 C21.5 26.5 21.5 26.5 13 24 C21.5 21.5 21.5 21.5 24 13 Z" fill="#fff"/></svg>`;
+  const SIC = {
+    doc:'<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px"><path d="M14 3v4a1 1 0 0 0 1 1h4"/><path d="M16 21H8a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h6l4 4v12a2 2 0 0 1-2 2z"/><path d="M9.5 13h5M9.5 16.5h3.5"/></svg>',
+    check:'<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px"><circle cx="12" cy="12" r="8.4"/><path d="M8.4 12.3l2.4 2.4 4.8-5.1"/></svg>',
+    list:'<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px"><path d="M10 6.5h10M10 12h10M10 17.5h10"/><path d="M4 6.2l1 1 1.8-2M4 11.7l1 1 1.8-2M4 17.2l1 1 1.8-2"/></svg>',
+    cal:'<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px"><rect x="4" y="5.5" width="16" height="15" rx="2.5"/><path d="M4 10h16M8.5 3.5v4M15.5 3.5v4"/></svg>',
+    bar:'<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px"><path d="M4 20h16"/><path d="M7 20v-5M12 20V8M17 20v-8"/></svg>',
+    pin:'<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M12 21s6-5.3 6-10.2A6 6 0 0 0 6 10.8C6 15.7 12 21 12 21z"/><circle cx="12" cy="10.6" r="2.2"/></svg>',
+    chat:'<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M20 11.5a7.5 7.5 0 0 1-10.5 6.9L4 20l1.6-4.4A7.5 7.5 0 1 1 20 11.5z"/></svg>'
+  };
   function renderChat(){
     let h = `<div class="day">2024년 10월 24일</div>`;
     chatMsgs.forEach((m,idx)=>{
@@ -300,14 +307,14 @@
             <button data-react="🙌" title="고마워요">🙌</button>
             <button data-react="😄" title="웃겨요">😄</button>
             <span class="sep"></span>
-            <button data-comment title="댓글">💬</button>
+            <button data-comment title="댓글">${SIC.chat}</button>
             <button data-more title="더보기">⋯</button>
           </div>` : '';
       h += `<div class="chat" data-i="${idx}"><div class="av" style="background:${m.color}">${PERSON}</div><div class="body">
         <div class="nm">${m.nm} <span class="roletag ${roleClass(m.role)}">${m.role}</span><span class="t">${m.t}</span></div>
         <div class="tx">${m.tx}</div>
         ${m.file?`<div class="file"><div class="ic" style="background:#EEF0F3;color:${m.file.bg}">${fileIcon(m.file.fn)}</div><div><div class="fn">${m.file.fn}</div><div class="fm">${m.file.fm}</div></div></div>`:''}
-        ${m.commentsList?`<div class="comments" data-comments="${idx}">💬 댓글 ${m.commentsList.length}개 ${m.commentsOpen?'접기 ▴':'모두 보기 →'}</div>${m.commentsOpen?`<div class="thread">${m.commentsList.map(c=>`<div class="cmt"><div class="cav" style="background:${c.color}">${PERSON}</div><div class="cbody"><div class="cnm">${c.nm} <span class="roletag ${roleClass(c.role)}">${c.role}</span><span class="ct">${c.t}</span></div><div class="ctx">${c.tx}</div></div></div>`).join('')}</div>`:''}`:''}
+        ${m.commentsList?`<div class="comments" data-comments="${idx}">${SIC.chat} 댓글 ${m.commentsList.length}개 ${m.commentsOpen?'접기 ▴':'모두 보기 →'}</div>${m.commentsOpen?`<div class="thread">${m.commentsList.map(c=>`<div class="cmt"><div class="cav" style="background:${c.color}">${PERSON}</div><div class="cbody"><div class="cnm">${c.nm} <span class="roletag ${roleClass(c.role)}">${c.role}</span><span class="ct">${c.t}</span></div><div class="ctx">${c.tx}</div></div></div>`).join('')}</div>`:''}`:''}
         ${reacts}
       </div>${tools}</div>`;
     });
@@ -480,19 +487,19 @@
 
   /* ── AI 채팅 ── */
   const CHIPS = [
-    {k:'summary',ic:'🧾',tx:'이 토픽 대화 요약해줘'},
-    {k:'decide',ic:'✅',tx:'결정된 것·미결인 것 정리해줘'},
-    {k:'todo',ic:'🗂',tx:'할 일 목록 만들어줘 (담당자·기한)'},
-    {k:'meeting',ic:'📅',tx:'다음 회의 일정 잡아줘'},
-    {k:'report',ic:'📊',tx:'진행 상태 보고서 초안 써줘'}
+    {k:'summary',ic:SIC.doc,tx:'이 토픽 대화 요약해줘'},
+    {k:'decide',ic:SIC.check,tx:'결정된 것·미결인 것 정리해줘'},
+    {k:'todo',ic:SIC.list,tx:'할 일 목록 만들어줘 (담당자·기한)'},
+    {k:'meeting',ic:SIC.cal,tx:'다음 회의 일정 잡아줘'},
+    {k:'report',ic:SIC.bar,tx:'진행 상태 보고서 초안 써줘'}
   ];
   const RESULTS = {
-    summary:{h:'🧾 대화 요약',b:`<b>#고객 초청 행사 — 지금까지</b>
+    summary:{h:SIC.doc+' 대화 요약',b:`<b>#고객 초청 행사 — 지금까지</b>
 • 목표: 신규 리드 200명 확보 (박종민)
 • 디자인: 키비주얼 시안 3개 공유, 최종안 선정 대기 (김하혜)
 • 개발: 등록 페이지 다음 주 가능, 단 폼 필드 확정 필요 (조우현)
 • 마케팅: 참가자 리스트 정리 완료, 발송 일정 미정 (최주민)`},
-    decide:{h:'✅ 결정 · 미결',b:`<b>결정됨</b>
+    decide:{h:SIC.check+' 결정 · 미결',b:`<b>결정됨</b>
 • 행사 목표: 신규 리드 200명
 • 등록 페이지 자체 제작
 
@@ -500,14 +507,14 @@
 • 등록 폼 필드 확정
 • 키비주얼 최종안 선정
 • 초청 메일 발송일`},
-    todo:{h:'🗂 제안 할 일',b:`☐ 등록 폼 필드 확정 — <b>조우현</b> · 10/28
+    todo:{h:SIC.list+' 제안 할 일',b:`☐ 등록 폼 필드 확정 — <b>조우현</b> · 10/28
 ☐ 키비주얼 최종안 선정 — <b>김하혜</b> · 10/29
 ☐ 초청 메일 발송 — <b>최주민</b> · 11/01`,act:'할 일 탭에 추가'},
-    meeting:{h:'📅 회의 일정 제안',b:`팀 캘린더 빈 시간 기준 후보:
+    meeting:{h:SIC.cal+' 회의 일정 제안',b:`팀 캘린더 빈 시간 기준 후보:
 • 10/25(금) 14:00–14:30
 • 10/28(월) 11:00–11:30
 • 10/29(화) 16:00–16:30`,act:'10/25 14:00로 잡기'},
-    report:{h:'📊 상태 보고서 초안',b:`<b>[고객 초청 행사] 준비 약 75%</b>
+    report:{h:SIC.bar+' 상태 보고서 초안',b:`<b>[고객 초청 행사] 준비 약 75%</b>
 • 완료: 참가자 리스트, 장소 예약
 • 진행: 등록 페이지(개발), 키비주얼(디자인)
 • 리스크: 폼 필드 미확정 시 개발 지연 가능
